@@ -22,6 +22,7 @@ spring:
     username: BI
     password: bi123456
     type: com.alibaba.druid.pool.DruidDataSource
+
   # Redis 配置
   # todo 需替换配置，然后取消注释
   redis:
@@ -61,3 +62,6 @@ xunfei:
     appid: 6d07b086
     apiSecret: ZWZkMzNhMjE5YWZmM2RlZjk3ZmViMDA2
     apiKey: 1509ca9333dc32b28c0162763fc92222
+logging:
+  file:
+    path: /logs

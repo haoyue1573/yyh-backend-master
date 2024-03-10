@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @Profile({"dev", "test"})
-public class Knife4jConfig {
+public class Knife4jConfig{
 
     @Bean
     public Docket defaultApi2() {

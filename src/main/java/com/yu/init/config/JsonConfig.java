@@ -3,20 +3,24 @@ package com.yu.init.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * Spring MVC Json 配置
- *
-
  */
 @JsonComponent
 public class JsonConfig {
 
     /**
      * 添加 Long 转 json 精度丢失的配置
+     *
+     *
+     *     @Bean
+     *    @Conditional(Knife4jConfig.class)  这两个注解通常一块使用
+     *
      */
     @Bean
     public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {

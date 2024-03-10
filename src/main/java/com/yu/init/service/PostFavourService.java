@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yu.init.model.entity.Post;
 import com.yu.init.model.entity.PostFavour;
 import com.yu.init.model.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 帖子收藏服务
@@ -22,6 +23,8 @@ public interface PostFavourService extends IService<PostFavour> {
      * @param loginUser
      * @return
      */
+
+    @Transactional()
     int doPostFavour(long postId, User loginUser);
 
     /**

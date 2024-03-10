@@ -1,6 +1,7 @@
 package com.yu.init.xunfei;
 
 
+import com.yu.init.MainApplication;
 import com.yu.init.manager.SparkManager;
 import io.github.briqt.spark4j.SparkClient;
 import io.github.briqt.spark4j.constant.SparkApiVersion;
@@ -10,17 +11,25 @@ import io.github.briqt.spark4j.model.SparkSyncChatResponse;
 import io.github.briqt.spark4j.model.request.SparkRequest;
 import io.github.briqt.spark4j.model.response.SparkTextUsage;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-//@SpringBootTest(classes = MainApplication.class)
-//@RunWith(org.springframework.test.context.junit4.SpringRunner.class)
+@SpringBootTest(classes = MainApplication.class)
+@RunWith(org.springframework.test.context.junit4.SpringRunner.class)
 public class XunFeiAiTest {
 
     @Resource
     private SparkManager sparkManager;
+
+    @Resource
+    private PlatformTransactionManager transactionManager;
 
     public static final String PRECONDITION = "你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容：\n" +
             "分析需求：\n" +
@@ -36,8 +45,15 @@ public class XunFeiAiTest {
 
     @Test
     public void test() {
-        String s = sparkManager.sendMesToAIUseXingHuo(PRECONDITION);
-        System.out.println(s);
+       // String s = sparkManager.sendMesToXunFeiAndSync(PRECONDITION);
+
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            // ....  业务代码
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+        }
     }
   
     @Test

@@ -3,12 +3,12 @@ package com.yu.init.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yu.init.exception.BusinessException;
-import com.yu.init.model.entity.User;
 import com.yu.init.common.ErrorCode;
 import com.yu.init.constant.CommonConstant;
+import com.yu.init.exception.BusinessException;
 import com.yu.init.mapper.UserMapper;
 import com.yu.init.model.dto.user.UserQueryRequest;
+import com.yu.init.model.entity.User;
 import com.yu.init.model.enums.UserRoleEnum;
 import com.yu.init.model.vo.LoginUserVO;
 import com.yu.init.model.vo.UserVO;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,20 +101,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE+user.getId(), user);
+        HttpSession session = request.getSession();
+        session.setAttribute(USER_LOGIN_STATE,user);
+        session.setAttribute("username","admin");
         return this.getLoginUserVO(user);
     }
 
     /**
      * 获取当前登录用户
-     *
      * @param request
      * @return
      */
     @Override
     public User getLoginUser(HttpServletRequest request) {
         // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        HttpSession session = request.getSession();
+        Object userObj = session.getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userObj;
         if (currentUser == null || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);

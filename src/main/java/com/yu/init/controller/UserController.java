@@ -20,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -35,12 +34,8 @@ import java.util.List;
 @Slf4j
 public class UserController {
 
-
-    private static final ThreadLocal<String>  threadLocal= new ThreadLocal<>();
-
     @Resource
     private UserService userService;
-
 
     // region 登录相关
 
@@ -75,12 +70,6 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request, HttpServletResponse response) {
         log.info("当前线程是：{}",Thread.currentThread().getName());
-        threadLocal.set("线程你好!!");
-        Cookie cookie=new Cookie("name","yuhaoyue");
-        cookie.setPath("/ap"); //当访问的请求包含/api时带上这个cookie
-        cookie.setMaxAge(24*60*60); //存活一天
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.addCookie(cookie);
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -116,8 +105,7 @@ public class UserController {
      */
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
-        System.out.println("当前的线程是"+Thread.currentThread().getName());
-        System.out.println("thradlocal中的信息为"+threadLocal.get());
+
         User user = userService.getLoginUser(request);
         return ResultUtils.success(userService.getLoginUserVO(user));
     }

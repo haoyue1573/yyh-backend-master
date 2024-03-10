@@ -13,9 +13,9 @@ import com.yu.init.constant.UserConstant;
 import com.yu.init.enums.Enums;
 import com.yu.init.exception.BusinessException;
 import com.yu.init.exception.ThrowUtils;
-import com.yu.init.manager.YuAiManager;
 import com.yu.init.manager.RedisLimiterManager;
 import com.yu.init.manager.SparkManager;
+import com.yu.init.manager.YuAiManager;
 import com.yu.init.model.dto.chart.*;
 import com.yu.init.model.entity.Chart;
 import com.yu.init.model.entity.User;
@@ -64,12 +64,8 @@ public class ChartController {
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
 
-//    @Resource
-//    private BiMessageProducer biMessageProducer;
-
     @Resource
     private SparkManager sparkManager;
-
 
     // region 增删改查
 
@@ -82,6 +78,7 @@ public class ChartController {
      */
     @PostMapping("/add")
     public BaseResponse<Long> addChart(@RequestBody ChartAddRequest chartAddRequest, HttpServletRequest request) {
+
         if (chartAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -263,50 +260,11 @@ public class ChartController {
         User loginUser = userService.getLoginUser(request);
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-        // 构造用户输入
 
-        StringBuilder userInput = new StringBuilder();
-
-        userInput.append("你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容:").append("\n");
-        userInput.append("分析需求：").append("\n");
-        // 拼接分析目标
-        String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)) {
-            userGoal += "，请使用" + chartType;
-        }
-        userInput.append(userGoal).append("\n");
-        userInput.append("原始数据：").append("\n");
         // 压缩后的数据
         String csvData = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append(csvData).append("\n");
-        userInput.append("请根据这两部分内容，按照以下指定格式生成内容（此外不要输出任何多余的开头、结尾、注释）\n" +
-                "【【【【【\n" +
-                "{前端 Echarts V5 的 option 配置对象的json字符串格式的js代码，合理地将数据进行可视化，不要生成任何多余的内容，比如注释}\n" +
-                "【【【【【\n" +
-                "{明确的数据分析结论，越详细越好，不要生成多余的注释\n}" +
-                "最终生成的前端代码和分析结论使用【【【【隔离开;");
-        String result = sparkManager.sendMesToAIUseXingHuo(userInput.toString());
-        String[] split = result.split("【【【【");
-        String genChart = split[1];
-        String genResult = split[2];
-
-
-
-        // 插入到数据库
-        Chart chart = new Chart();
-        chart.setName(name);
-        chart.setGoal(goal);
-        chart.setChartData(csvData);
-        chart.setChartType(chartType);
-        chart.setGenChart(genChart);
-        chart.setGenResult(genResult);
-        chart.setUserId(loginUser.getId());
-        boolean saveResult = chartService.save(chart);
-        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
-        BiResponse biResponse = new BiResponse();
-        biResponse.setGenChart(genChart);
-        biResponse.setGenResult(genResult);
-        biResponse.setChartId(chart.getId());
+        //询问ai生成数据
+        BiResponse biResponse =  chartService.genChartData(genChartByAiRequest,csvData,loginUser.getId());
         return ResultUtils.success(biResponse);
     }
 
@@ -341,11 +299,10 @@ public class ChartController {
         User loginUser = userService.getLoginUser(request);
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-        long biModelId = 1659171950288818178L;
+        // 压缩后的数据
+        String csvData = ExcelUtils.excelToCsv(multipartFile);
         // 构造用户输入
-
         StringBuilder userInput = new StringBuilder();
-
         userInput.append("你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容:").append("\n");
         userInput.append("分析需求：").append("\n");
         // 拼接分析目标
@@ -355,21 +312,22 @@ public class ChartController {
         }
         userInput.append(userGoal).append("\n");
         userInput.append("原始数据：").append("\n");
-        // 压缩后的数据
-        String csvData = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append(csvData).append("\n");
+
         userInput.append("请根据这两部分内容，按照以下指定格式生成内容（此外不要输出任何多余的开头、结尾、注释）\n" +
                 "【【【【【\n" +
                 "{前端 Echarts V5 的 option 配置对象的json字符串格式的js代码，合理地将数据进行可视化，不要生成任何多余的内容，比如注释}\n" +
                 "【【【【【\n" +
                 "{明确的数据分析结论，越详细越好，不要生成多余的注释\n}" +
                 "最终生成的前端代码和分析结论使用【【【【隔离开;");
+
+
         // 插入到数据库
         Chart chart = new Chart();
         chart.setName(name);
         chart.setGoal(goal);
         chart.setChartData(csvData);
         chart.setChartType(chartType);
+        // 状态 :等待
         chart.setStatus(Enums.WAITING.getMsg());
         chart.setUserId(loginUser.getId());
         boolean saveResult = chartService.save(chart);
@@ -380,6 +338,7 @@ public class ChartController {
             // 先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；执行失败后，状态修改为 “失败”，记录任务失败信息。
             Chart updateChart = new Chart();
             updateChart.setId(chart.getId());
+            //图标状态: 正在生成
             updateChart.setStatus(Enums.RUNNING.getMsg());
             boolean b = chartService.updateById(updateChart);
             if (!b) {
@@ -387,26 +346,26 @@ public class ChartController {
                 return;
             }
             // 调用 AI
-            String result = sparkManager.sendMesToAIUseXingHuo(userInput.toString());
+            String result = sparkManager.sendMesToXunFeiAndSync(userInput.toString());
             String[] splits = result.split("【【【【");
-            if (splits.length >3) {
+            String genChart = splits[1];
+            String genResult = splits[2];
+
+            if (splits.length > 3) {
                 handleChartUpdateError(chart.getId(), "AI 生成错误");
                 return;
             }
-            String genChart = splits[1].trim();
-            String genResult = splits[2].trim();
             Chart updateChartResult = new Chart();
             updateChartResult.setId(chart.getId());
             updateChartResult.setGenChart(genChart);
             updateChartResult.setGenResult(genResult);
-            // todo 建议定义状态为枚举值
-            updateChartResult.setStatus(Enums.WAITING.getMsg());
+            // 图标 生成成功
+            updateChartResult.setStatus(Enums.SUCCEED.getMsg());
             boolean updateResult = chartService.updateById(updateChartResult);
             if (!updateResult) {
                 handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
             }
         }, threadPoolExecutor);
-
         BiResponse biResponse = new BiResponse();
         biResponse.setChartId(chart.getId());
         return ResultUtils.success(biResponse);
@@ -425,9 +384,6 @@ public class ChartController {
     @PostMapping("/gen/async/mq")
     public BaseResponse<BiResponse> genChartByAiAsyncMq(@RequestPart("file") MultipartFile multipartFile,
                                                         GenChartByAiRequest genChartByAiRequest, HttpServletRequest request, HttpServletResponse response) {
-
-
-
 
         String name = genChartByAiRequest.getName();
         String goal = genChartByAiRequest.getGoal();
@@ -488,7 +444,7 @@ public class ChartController {
     private void handleChartUpdateError(long chartId, String execMessage) {
         Chart updateChartResult = new Chart();
         updateChartResult.setId(chartId);
-        updateChartResult.setStatus("failed");
+        updateChartResult.setStatus(Enums.FAIL.getMsg());
         updateChartResult.setExecMessage("execMessage");
         boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {

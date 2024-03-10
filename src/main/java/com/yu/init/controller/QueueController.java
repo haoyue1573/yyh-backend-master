@@ -28,7 +28,8 @@ public class QueueController {
     private ThreadPoolExecutor threadPoolExecutor;
 
     @GetMapping("/add")
-    public void add(String name) {
+    public void
+    add(String name) {
         CompletableFuture.runAsync(() -> {
             log.info("任务执行中：" + name + "，执行人：" + Thread.currentThread().getName());
             try {
