@@ -1,11 +1,8 @@
-package com.yu.init.service;
+package com.yu.init.utils.service;
 
 import com.yu.init.manager.SparkManager;
 import io.github.briqt.spark4j.SparkClient;
-import io.github.briqt.spark4j.constant.SparkApiVersion;
 import io.github.briqt.spark4j.listener.SparkBaseListener;
-import io.github.briqt.spark4j.listener.SparkConsoleListener;
-import io.github.briqt.spark4j.model.SparkMessage;
 import io.github.briqt.spark4j.model.request.SparkRequest;
 import io.github.briqt.spark4j.model.response.SparkResponse;
 import io.github.briqt.spark4j.model.response.SparkResponseUsage;
@@ -17,8 +14,6 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -41,7 +36,7 @@ public class WebSocket  extends SparkBaseListener {
         @OnOpen
         public void onOpen(Session session,@PathParam("identification") String username){
 
-
+                System.out.println("建立链接");
         }
 
         /**
@@ -70,7 +65,7 @@ public class WebSocket  extends SparkBaseListener {
         @OnMessage
         public void onMsg(Session session,String message,@PathParam("identification") String username) throws IOException {
                 System.out.println("接收到前端的消息为"+message);
-                // 消息列表，可以在此列表添加历史对话记录
+  /*              // 消息列表，可以在此列表添加历史对话记录
                 List<SparkMessage> messages = new ArrayList<>();
                 messages.add(SparkMessage.userContent(message));
                 // 构造请求
@@ -86,7 +81,7 @@ public class WebSocket  extends SparkBaseListener {
                         .build();
                 // 流式调用
                 sparkClient.chatStream(sparkRequest,new SparkConsoleListener());
-               // session.getAsyncRemote().sendText("大傻叉");
+               // session.getAsyncRemote().sendText("大傻叉");*/
         }
 
         @Override

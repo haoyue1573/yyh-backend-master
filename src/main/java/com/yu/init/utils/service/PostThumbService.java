@@ -1,4 +1,4 @@
-package com.yu.init.service;
+package com.yu.init.utils.service;
 
 import com.yu.init.model.entity.PostThumb;
 import com.yu.init.model.entity.User;

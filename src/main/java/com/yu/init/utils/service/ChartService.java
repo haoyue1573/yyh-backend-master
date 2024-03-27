@@ -1,4 +1,4 @@
-package com.yu.init.service;
+package com.yu.init.utils.service;
 
 import com.yu.init.model.dto.chart.GenChartByAiRequest;
 import com.yu.init.model.entity.Chart;

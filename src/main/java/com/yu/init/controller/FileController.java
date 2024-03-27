@@ -9,7 +9,7 @@ import com.yu.init.exception.BusinessException;
 import com.yu.init.model.dto.file.UploadFileRequest;
 import com.yu.init.model.entity.User;
 import com.yu.init.model.enums.FileUploadBizEnum;
-import com.yu.init.service.UserService;
+import com.yu.init.utils.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package com.yu.init.service;
+package com.yu.init.utils.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;

@@ -1,4 +1,4 @@
-package com.yu.init.service.impl;
+package com.yu.init.utils.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -12,7 +12,7 @@ import com.yu.init.model.entity.User;
 import com.yu.init.model.enums.UserRoleEnum;
 import com.yu.init.model.vo.LoginUserVO;
 import com.yu.init.model.vo.UserVO;
-import com.yu.init.service.UserService;
+import com.yu.init.utils.service.UserService;
 import com.yu.init.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package com.yu.init.service;
+package com.yu.init.utils.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;

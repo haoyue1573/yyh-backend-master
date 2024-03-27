@@ -5,7 +5,7 @@ import com.yu.init.exception.BusinessException;
 import com.yu.init.common.ErrorCode;
 import com.yu.init.model.entity.User;
 import com.yu.init.model.enums.UserRoleEnum;
-import com.yu.init.service.UserService;
+import com.yu.init.utils.service.UserService;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

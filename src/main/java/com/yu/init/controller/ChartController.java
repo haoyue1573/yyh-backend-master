@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yu.init.annotation.AuthCheck;
+import com.yu.init.bizmq.BiMessageProducer;
 import com.yu.init.common.BaseResponse;
 import com.yu.init.common.DeleteRequest;
 import com.yu.init.common.ErrorCode;
@@ -15,13 +16,12 @@ import com.yu.init.exception.BusinessException;
 import com.yu.init.exception.ThrowUtils;
 import com.yu.init.manager.RedisLimiterManager;
 import com.yu.init.manager.SparkManager;
-import com.yu.init.manager.YuAiManager;
 import com.yu.init.model.dto.chart.*;
 import com.yu.init.model.entity.Chart;
 import com.yu.init.model.entity.User;
 import com.yu.init.model.vo.BiResponse;
-import com.yu.init.service.ChartService;
-import com.yu.init.service.UserService;
+import com.yu.init.utils.service.ChartService;
+import com.yu.init.utils.service.UserService;
 import com.yu.init.utils.ExcelUtils;
 import com.yu.init.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class ChartController {
     private UserService userService;
 
     @Resource
-    private YuAiManager aiManager;
+    private BiMessageProducer biMessageProducer;
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
@@ -434,7 +434,9 @@ public class ChartController {
         boolean saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         long newChartId = chart.getId();
-        //TODO biMessageProducer.sendMessage(String.valueOf(newChartId));
+
+        biMessageProducer.sendMessage(String.valueOf(newChartId));
+
         BiResponse biResponse = new BiResponse();
         biResponse.setChartId(newChartId);
         return ResultUtils.success(biResponse);

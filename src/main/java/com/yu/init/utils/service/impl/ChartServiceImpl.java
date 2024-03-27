@@ -1,7 +1,8 @@
-package com.yu.init.service.impl;
+package com.yu.init.utils.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yu.init.common.ErrorCode;
+import com.yu.init.enums.Enums;
 import com.yu.init.exception.ThrowUtils;
 import com.yu.init.manager.RedisLimiterManager;
 import com.yu.init.manager.SparkManager;
@@ -9,8 +10,8 @@ import com.yu.init.mapper.ChartMapper;
 import com.yu.init.model.dto.chart.GenChartByAiRequest;
 import com.yu.init.model.entity.Chart;
 import com.yu.init.model.vo.BiResponse;
-import com.yu.init.service.ChartService;
-import com.yu.init.service.UserService;
+import com.yu.init.utils.service.ChartService;
+import com.yu.init.utils.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Service
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
-    implements ChartService{
+    implements ChartService {
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
@@ -71,6 +72,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         Chart chart = new Chart();
         chart.setName(name);
         chart.setGoal(goal);
+        chart.setStatus(Enums.SUCCEED.getMsg());
         chart.setChartData(csvData);
         chart.setChartType(chartType);
         chart.setGenChart(genChart);
