@@ -5,7 +5,7 @@ import com.yu.init.common.ErrorCode;
 import com.yu.init.exception.BusinessException;
 import com.yu.init.manager.SparkManager;
 import com.yu.init.model.entity.Chart;
-import com.yu.init.utils.service.ChartService;
+import com.yu.init.service.ChartService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,11 +26,11 @@ public class BiMessageConsumer {
     @Resource
     private SparkManager sparkManager;
 
-
     // 指定程序监听的消息队列和确认机制
     @SneakyThrows
     @RabbitListener(queues = {BiMqConstant.BI_QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+
         log.info("receiveMessage message = {}", message);
         if (StringUtils.isBlank(message)) {
             // 如果失败，消息拒绝

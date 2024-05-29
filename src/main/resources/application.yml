@@ -3,7 +3,7 @@ spring:
     name: yubi-backend
   # 默认 dev 环境
   profiles:
-    active: dev
+    active: prod
   # 支持 swagger3
   mvc:
     pathmatch:
@@ -14,15 +14,6 @@ spring:
     # store-type: redis
     # 30 天过期
     timeout: 2592000
-  # 数据库配置
-  # todo 需替换配置
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://123.249.10.204:3306/bi
-    username: BI
-    password: bi123456
-    type: com.alibaba.druid.pool.DruidDataSource
-
   # Redis 配置
   # todo 需替换配置，然后取消注释
   redis:
@@ -61,14 +52,18 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 
-
+# 鱼聪明 AI 配置
+yuapi:
+  client:
+    access-key: 92af8w00w8d1e8iwgdt3b1hes1ac573m
+    secret-key: tagt5zo0len8a3h07iwkslwe2gly32db
 # todo 需替换配置
 # 讯飞星火 AI 配置
 xunfei:
   client:
-    appid: 6d07b086
     apiSecret: ZWZkMzNhMjE5YWZmM2RlZjk3ZmViMDA2
     apiKey: 1509ca9333dc32b28c0162763fc92222
+    appid: 6d07b086
 logging:
   file:
     path: /logs

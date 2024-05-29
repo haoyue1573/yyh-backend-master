@@ -20,7 +20,6 @@ public class FilterHandle implements Filter {
         String requestURI = req.getRequestURI();
         System.out.println("前端的访问路径 = " + requestURI);
         String visitIp = req.getRemoteAddr();
-        visitIp = "0:0:0:0:0:0:0:1".equals(visitIp) ? "127.0.0.1" : visitIp;
         // 每次拦截到请求输出访问 ip
         System.out.println("访问 IP = " + visitIp);
         chain.doFilter(req, response);

@@ -7,9 +7,8 @@ import com.yu.init.common.ResultUtils;
 import com.yu.init.constant.FileConstant;
 import com.yu.init.exception.BusinessException;
 import com.yu.init.model.dto.file.UploadFileRequest;
-import com.yu.init.model.entity.User;
 import com.yu.init.model.enums.FileUploadBizEnum;
-import com.yu.init.utils.service.UserService;
+import com.yu.init.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,11 +51,12 @@ public class FileController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         validFile(multipartFile, fileUploadBizEnum);
-        User loginUser = userService.getLoginUser(request);
+//        User loginUser = userService.getLoginUser(request);
         // 文件目录：根据业务、用户来划分
         String uuid = RandomStringUtils.randomAlphanumeric(8);
         String filename = uuid + "-" + multipartFile.getOriginalFilename();
-        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUser.getId(), filename);
+//        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUser.getId(), filename);
+        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(),"520", filename);
         File file = null;
         try {
             // 上传文件

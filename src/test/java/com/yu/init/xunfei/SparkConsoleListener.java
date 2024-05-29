@@ -37,13 +37,9 @@ public class SparkConsoleListener extends SparkBaseListener {
             }
             System.out.println("\n收到回答：\n");
         }
-
-        try {
-            System.out.println("--content：" + content + " --完整响应：" + objectMapper.writeValueAsString(sparkResponse));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
+        String responseContent = sparkResponse.getPayload().getChoices().getText().get(0).getContent();
+        System.out.println("响应为： {} "+responseContent);
+        stringBuilder.append(responseContent);
         if (2 == status) {
             System.out.println("\n完整回答：" + stringBuilder.toString());
             SparkTextUsage textUsage = usage.getText();
@@ -64,8 +60,8 @@ public class SparkConsoleListener extends SparkBaseListener {
         sparkClient.apiSecret="ZWZkMzNhMjE5YWZmM2RlZjk3ZmViMDA2";
         // 消息列表，可以在此列表添加历史对话记录
         List<SparkMessage> messages=new ArrayList<>();
-        messages.add(SparkMessage.userContent("请你扮演我的语文老师李老师，问我讲解问题问题，希望你可以保证知识准确，逻辑严谨。"));
-        messages.add(SparkMessage.assistantContent("好的，这位同学，有什么问题需要李老师为你解答吗？"));
+//        messages.add(SparkMessage.userContent("请你扮演我的语文老师李老师，问我讲解问题问题，希望你可以保证知识准确，逻辑严谨。"));
+//        messages.add(SparkMessage.assistantContent("好的，这位同学，有什么问题需要李老师为你解答吗？"));
         messages.add(SparkMessage.userContent("鲁迅和周树人小时候打过架吗？"));
         SparkRequest sparkRequest=SparkRequest.builder()
                 .messages(messages)
@@ -74,7 +70,7 @@ public class SparkConsoleListener extends SparkBaseListener {
                 .apiVersion(SparkApiVersion.V3_5)
                 .build();
         // 使用默认的控制台监听器，流式调用；
-        sparkClient.chatStream(sparkRequest,new io.github.briqt.spark4j.listener.SparkConsoleListener());
+        sparkClient.chatStream(sparkRequest,new SparkConsoleListener());
         // 实际使用时请继承SparkBaseListener自定义监听器实现
      //   sparkClient.chatStream(sparkRequest,new SparkConsoleListener());
 

@@ -6,20 +6,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ConfigurationProperties(prefix = "xunfei.client")
-@SuppressWarnings("All")
+
+
 @Data
-public class XunFeiConfig {
+@Configuration
+@SuppressWarnings("All")
+@ConfigurationProperties(prefix = "xunfei.client")
+public class XunFeiConfig  {
     private String appid;
     private String apiSecret;
     private String apiKey;
     @Bean
     public SparkClient sparkClient() {
         SparkClient sparkClient = new SparkClient();
-        sparkClient.apiKey = apiKey;
-        sparkClient.apiSecret = apiSecret;
-        sparkClient.appid = appid;
+        sparkClient.apiKey = this.apiKey;
+        sparkClient.apiSecret = this.apiSecret;
+        sparkClient.appid = this.appid;
         return sparkClient;
     }
 

@@ -20,8 +20,8 @@ import com.yu.init.model.dto.chart.*;
 import com.yu.init.model.entity.Chart;
 import com.yu.init.model.entity.User;
 import com.yu.init.model.vo.BiResponse;
-import com.yu.init.utils.service.ChartService;
-import com.yu.init.utils.service.UserService;
+import com.yu.init.service.ChartService;
+import com.yu.init.service.UserService;
 import com.yu.init.utils.ExcelUtils;
 import com.yu.init.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +71,6 @@ public class ChartController {
 
     /**
      * 创建
-     *
      * @param chartAddRequest
      * @param request
      * @return
@@ -204,7 +203,6 @@ public class ChartController {
 
     /**
      * 编辑（用户）
-     *
      * @param chartEditRequest
      * @param request
      * @return
@@ -242,7 +240,6 @@ public class ChartController {
                                                  GenChartByAiRequest genChartByAiRequest, HttpServletRequest request){
         String name = genChartByAiRequest.getName();
         String goal = genChartByAiRequest.getGoal();
-        String chartType = genChartByAiRequest.getChartType();
         // 校验
         ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
         ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
@@ -254,7 +251,7 @@ public class ChartController {
         ThrowUtils.throwIf(size > ONE_MB, ErrorCode.PARAMS_ERROR, "文件超过 1M");
         // 校验文件后缀 aaa.png
         String suffix = FileUtil.getSuffix(originalFilename);
-        final List<String> validFileSuffixList = Arrays.asList("xlsx");
+        final List<String> validFileSuffixList = Arrays.asList("xlsx","xls");
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
 
         User loginUser = userService.getLoginUser(request);
@@ -334,7 +331,7 @@ public class ChartController {
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
 
         // todo 建议处理任务队列满了后，抛异常的情况
-        CompletableFuture.runAsync(() -> {
+        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
             // 先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；执行失败后，状态修改为 “失败”，记录任务失败信息。
             Chart updateChart = new Chart();
             updateChart.setId(chart.getId());
@@ -366,6 +363,7 @@ public class ChartController {
                 handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
             }
         }, threadPoolExecutor);
+
         BiResponse biResponse = new BiResponse();
         biResponse.setChartId(chart.getId());
         return ResultUtils.success(biResponse);

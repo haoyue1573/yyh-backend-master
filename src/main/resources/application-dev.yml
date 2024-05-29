@@ -1,6 +1,9 @@
-management:
-  endpoints:
-    enabled-by-default: true #暴露所有端点信息
-    web:
-      exposure:
-        include: '*'  #以web方式暴露(不包含shutdown)
+spring:
+  # 数据库配置
+  # todo 需替换配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://123.249.10.204:3306/bi
+    username: BI
+    password: bi123456
+    type: com.alibaba.druid.pool.DruidDataSource

@@ -13,7 +13,7 @@ import com.yu.init.model.dto.user.*;
 import com.yu.init.model.entity.User;
 import com.yu.init.model.vo.LoginUserVO;
 import com.yu.init.model.vo.UserVO;
-import com.yu.init.utils.service.UserService;
+import com.yu.init.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -229,6 +229,7 @@ public class UserController {
      * @param request
      * @return
      */
+
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest,
             HttpServletRequest request) {
